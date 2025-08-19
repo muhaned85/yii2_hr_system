@@ -31,3 +31,10 @@ tests/_support/_generated
 
 #vagrant folder
 /.vagrant
+
+# npm
+node_modules/
+package-lock.json
+
+# Generated CSS
+/web/css/tailwind.css

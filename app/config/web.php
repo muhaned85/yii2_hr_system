@@ -11,6 +11,23 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'bank' => [
+            'class' => 'app\modules\bank\BankModule',
+        ],
+        'partner' => [
+            'class' => 'app\modules\partner\PartnerModule',
+        ],
+        'user' => [
+            'class' => 'app\modules\user\UserModule',
+        ],
+        'employee' => [
+            'class' => 'app\modules\employee\EmployeeModule',
+        ],
+        'payroll' => [
+            'class' => 'app\modules\payroll\PayrollModule',
+        ],
+    ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
