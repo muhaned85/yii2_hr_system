@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* RTL Support */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Custom Arabic/RTL classes */
+.rtl\:mr-auto[dir="rtl"] {
+  margin-right: auto;
+}
+
+.rtl\:ml-auto[dir="rtl"] {
+  margin-left: auto;
+}
+
+/* Custom HR System specific styles */
+.sidebar-nav {
+  @apply bg-gray-800 text-white w-64 min-h-screen p-4;
+}
+
+.sidebar-nav a {
+  @apply block py-2 px-4 rounded hover:bg-gray-700 transition-colors;
+}
+
+.sidebar-nav a.active {
+  @apply bg-blue-600;
+}
+
+.content-area {
+  @apply flex-1 p-6 bg-gray-50 min-h-screen;
+}
+
+.card {
+  @apply bg-white shadow-md rounded-lg p-6 mb-6;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded transition-colors;
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors;
+}
+
+.form-input {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.table-responsive {
+  @apply overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg;
+}
+
+.table-responsive table {
+  @apply min-w-full divide-y divide-gray-300;
+}
+
+.table-responsive thead {
+  @apply bg-gray-50;
+}
+
+.table-responsive th {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table-responsive td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.table-responsive tbody tr:nth-child(even) {
+  @apply bg-gray-50;
+}
