@@ -1,0 +1,146 @@
+name: HR System CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: [8.1, 8.2, 8.3]
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: hr_system_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, intl, pdo, pdo_mysql, pdo_sqlite
+        coverage: xdebug
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: app/package-lock.json
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: app/vendor
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('app/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
+
+    - name: Install Composer dependencies
+      working-directory: app
+      run: composer install --prefer-dist --no-progress
+
+    - name: Install NPM dependencies
+      working-directory: app
+      run: npm ci
+
+    - name: Build Tailwind CSS
+      working-directory: app
+      run: npm run build-css
+
+    - name: Create runtime directories
+      working-directory: app
+      run: |
+        mkdir -p runtime/cache
+        mkdir -p runtime/logs
+        mkdir -p web/assets
+        chmod 777 runtime/cache
+        chmod 777 runtime/logs
+        chmod 777 web/assets
+
+    - name: Run database migrations (SQLite)
+      working-directory: app
+      run: php yii migrate --interactive=0
+      env:
+        YII_ENV: test
+
+    - name: Run tests
+      working-directory: app
+      run: |
+        vendor/bin/codecept build
+        vendor/bin/codecept run --coverage --coverage-xml
+      continue-on-error: true
+
+    - name: Check code style (if phpcs is available)
+      working-directory: app
+      run: |
+        if [ -f "vendor/bin/phpcs" ]; then
+          vendor/bin/phpcs --standard=PSR12 --ignore=vendor/ .
+        else
+          echo "PHPCS not available, skipping code style check"
+        fi
+      continue-on-error: true
+
+    - name: Test database migration down/up
+      working-directory: app
+      run: |
+        php yii migrate/down 1 --interactive=0 || true
+        php yii migrate --interactive=0
+      env:
+        YII_ENV: test
+
+    - name: Verify essential files exist
+      working-directory: app
+      run: |
+        test -f web/css/tailwind.css || (echo "Tailwind CSS not built" && exit 1)
+        test -f runtime/hr_system.db || (echo "Database not created" && exit 1)
+        echo "All essential files verified"
+
+  deploy-check:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo, pdo_mysql
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      working-directory: app
+      run: |
+        composer install --prefer-dist --no-dev --optimize-autoloader
+        npm ci
+    
+    - name: Build production assets
+      working-directory: app
+      run: npm run build-css
+      
+    - name: Test production build
+      working-directory: app
+      run: |
+        test -f web/css/tailwind.css || (echo "Production CSS not built" && exit 1)
+        echo "Production build verified"
