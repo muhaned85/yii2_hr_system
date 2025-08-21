@@ -97,4 +97,43 @@ class Employee extends ActiveRecord
         $statusList = self::getStatusList();
         return $statusList[$this->status] ?? 'Unknown';
     }
+
+    /**
+     * Get relation with bank
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBank()
+    {
+        return $this->hasOne(\app\modules\bank\models\Bank::class, ['id' => 'bank_id']);
+    }
+
+    /**
+     * Get relation with payrolls
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPayrolls()
+    {
+        return $this->hasMany(\app\modules\payroll\models\Payroll::class, ['employee_id' => 'id']);
+    }
+
+    /**
+     * Get full name
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * Get full Arabic name
+     * @return string
+     */
+    public function getFullNameAr()
+    {
+        if ($this->first_name_ar && $this->last_name_ar) {
+            return $this->first_name_ar . ' ' . $this->last_name_ar;
+        }
+        return $this->getFullName();
+    }
 }

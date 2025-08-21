@@ -31,7 +31,7 @@ class Bank extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bank';
+        return 'banks';
     }
 
     /**
@@ -104,5 +104,14 @@ class Bank extends ActiveRecord
     {
         $statusList = self::getStatusList();
         return $statusList[$this->status] ?? 'Unknown';
+    }
+
+    /**
+     * Get relation with employees
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEmployees()
+    {
+        return $this->hasMany(\app\modules\employee\models\Employee::class, ['bank_id' => 'id']);
     }
 }

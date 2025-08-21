@@ -79,8 +79,8 @@ class Payroll extends ActiveRecord
     public static function getStatusList()
     {
         return [
-            self::STATUS_ACTIVE => 'Active',
-            self::STATUS_INACTIVE => 'Inactive',
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_PROCESSED => 'Processed',
         ];
     }
 
@@ -91,5 +91,59 @@ class Payroll extends ActiveRecord
     {
         $statusList = self::getStatusList();
         return $statusList[$this->status] ?? 'Unknown';
+    }
+
+    /**
+     * Get relation with employee
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEmployee()
+    {
+        return $this->hasOne(\app\modules\employee\models\Employee::class, ['id' => 'employee_id']);
+    }
+
+    /**
+     * Get month name
+     * @return string
+     */
+    public function getMonthName()
+    {
+        $months = [
+            1 => 'يناير', 2 => 'فبراير', 3 => 'مارس', 4 => 'أبريل',
+            5 => 'مايو', 6 => 'يونيو', 7 => 'يوليو', 8 => 'أغسطس',
+            9 => 'سبتمبر', 10 => 'أكتوبر', 11 => 'نوفمبر', 12 => 'ديسمبر'
+        ];
+        return $months[$this->period_month] ?? $this->period_month;
+    }
+
+    /**
+     * Get period display
+     * @return string
+     */
+    public function getPeriodDisplay()
+    {
+        return $this->getMonthName() . ' ' . $this->period_year;
+    }
+
+    /**
+     * Calculate gross salary before save
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            // Calculate overtime amount
+            $overtimeAmount = $this->overtime_hours * $this->overtime_rate;
+            
+            // Calculate gross salary
+            $this->gross_salary = $this->basic_salary + $this->allowances + $overtimeAmount;
+            
+            // Calculate net salary
+            $this->net_salary = $this->gross_salary - $this->deductions;
+            
+            return true;
+        }
+        return false;
     }
 }
