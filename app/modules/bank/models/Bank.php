@@ -31,7 +31,7 @@ class Bank extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'banks';
+        return 'bank';
     }
 
     /**

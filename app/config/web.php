@@ -33,6 +33,16 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'XaLbYjM9IXhO8ofpheNpCnRVwYNrix7j',
         ],
+        'assetManager' => [
+            'bundles' => [
+                'yii\web\JqueryAsset' => [
+                    'sourcePath' => null, // مهم لتعطيل النشر من vendor
+                    'js' => [
+                        'https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js',
+                    ],
+                ],
+            ],
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
