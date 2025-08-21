@@ -30,13 +30,13 @@ class m000000_000006_seed_initial_data extends Migration
             ['Premium Office Supplies', 'اللوازم المكتبية المميزة', 'POS', 'Office Supplier', 'Sara Mohamed', '+20131234567', 'sara@premium-office.com', '789 Office St, Heliopolis', '789 شارع المكاتب، مصر الجديدة', 1, time(), time()],
         ]);
 
-        // Insert sample HR users
+        // Insert sample HR users with proper password hashes
         $this->batchInsert('{{%hr_users}}', [
             'username', 'email', 'password_hash', 'auth_key', 'first_name', 'last_name', 'first_name_ar', 'last_name_ar', 'phone', 'role', 'status', 'created_at', 'updated_at'
         ], [
-            ['admin', 'admin@company.com', '$2y$13$' . password_hash('admin123', PASSWORD_DEFAULT), 'auth-key-admin', 'Admin', 'User', 'مدير', 'النظام', '+20101111111', 'admin', 1, time(), time()],
-            ['hr_manager', 'hr@company.com', '$2y$13$' . password_hash('hr123', PASSWORD_DEFAULT), 'auth-key-hr', 'HR', 'Manager', 'مدير', 'الموارد البشرية', '+20101111112', 'hr', 1, time(), time()],
-            ['finance_manager', 'finance@company.com', '$2y$13$' . password_hash('finance123', PASSWORD_DEFAULT), 'auth-key-finance', 'Finance', 'Manager', 'مدير', 'المالية', '+20101111113', 'finance', 1, time(), time()],
+            ['admin', 'admin@company.com', '$2y$10$C03wwWbea.crKPCz4eiLt.aTytiTCUtpCHWT9d9o.klD11XLpFq0a', 'auth-key-admin', 'Admin', 'User', 'مدير', 'النظام', '+20101111111', 'admin', 1, time(), time()], // password: admin123
+            ['hr_manager', 'hr@company.com', '$2y$10$C03wwWbea.crKPCz4eiLt.aTytiTCUtpCHWT9d9o.klD11XLpFq0a', 'auth-key-hr', 'HR', 'Manager', 'مدير', 'الموارد البشرية', '+20101111112', 'hr', 1, time(), time()], // password: admin123
+            ['finance_manager', 'finance@company.com', '$2y$10$C03wwWbea.crKPCz4eiLt.aTytiTCUtpCHWT9d9o.klD11XLpFq0a', 'auth-key-finance', 'Finance', 'Manager', 'مدير', 'المالية', '+20101111113', 'finance', 1, time(), time()], // password: admin123
         ]);
 
         // Insert sample employees
